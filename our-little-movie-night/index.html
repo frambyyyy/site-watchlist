@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Our Little Movie Night</title>
+  <meta name="description" content="A tiny private app to pick our next movie night, one spin at a time." />
+  <meta name="theme-color" content="#F9DCE7" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23C74368' d='M32 56S6 40 6 22a13 13 0 0 1 26-4 13 13 0 0 1 26 4c0 18-26 34-26 34z'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=DM+Sans:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Reusable SVG icons (referenced with <use href="#i-...">) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.1 3 4 6.9 4c2.2 0 3.7 1.2 5.1 3 1.4-1.8 2.9-3 5.1-3C21 4 23.1 8.1 21.6 11.7 19.5 16.4 12 21 12 21z" fill="currentColor"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2l2.6 6.9L22 9.3l-5.8 4.6 2 7.1L12 17l-6.2 4 2-7.1L2 9.3l7.4-.4z" fill="currentColor"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12C6.4 11.4 11.4 6.4 12 0z" fill="currentColor"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M4 3h16v18H4zM8 3v18M16 3v18M4 7.5h4M4 12h4M4 16.5h4M16 7.5h4M16 12h4M16 16.5h4"/></symbol>
+    <symbol id="i-sound-on" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></symbol>
+    <symbol id="i-sound-off" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4 9v6h4l5 4V5L8 9zM17 9l5 6M22 9l-5 6"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+    <symbol id="i-wheel" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></g></symbol>
+  </svg>
+
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
+  <!-- Twinkling lights, only visible in Date Night Mode -->
+  <div class="fairy-lights" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#wheel" aria-label="Our Little Movie Night, home">
+        <span class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 48 48" width="40" height="40">
+            <rect x="4" y="9" width="40" height="30" rx="9" fill="#69263F"/>
+            <g fill="#F9DCE7"><rect x="8" y="12" width="4" height="3" rx="1"/><rect x="16" y="12" width="4" height="3" rx="1"/><rect x="24" y="12" width="4" height="3" rx="1"/><rect x="32" y="12" width="4" height="3" rx="1"/><rect x="8" y="33" width="4" height="3" rx="1"/><rect x="16" y="33" width="4" height="3" rx="1"/><rect x="24" y="33" width="4" height="3" rx="1"/><rect x="32" y="33" width="4" height="3" rx="1"/><rect x="40" y="12" width="1" height="3"/><rect x="40" y="33" width="1" height="3"/></g>
+            <path d="M24 31s-7-4.3-7-8.6a3.8 3.8 0 0 1 7-2.1 3.8 3.8 0 0 1 7 2.1c0 4.3-7 8.6-7 8.6z" fill="#F4BFD2"/>
+          </svg>
+        </span>
+        <span class="brand-name" data-i18n="brand">Our Little Movie Night</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main">
+        <a href="#wheel" data-i18n="navWheel">The Wheel</a>
+        <a href="#watchlist" data-i18n="navWatchlist">Our Watchlist</a>
+        <a href="#history" data-i18n="navHistory">Movie History</a>
+      </nav>
+
+      <div class="header-tools">
+        <button class="icon-btn" id="soundToggle" type="button" aria-pressed="true" aria-label="Sound on">
+          <svg width="20" height="20"><use href="#i-sound-on"/></svg>
+        </button>
+        <button class="icon-btn" id="nightToggle" type="button" aria-pressed="false" aria-label="Date Night Mode">
+          <svg width="20" height="20"><use href="#i-moon"/></svg>
+        </button>
+        <button class="lang-btn" id="langToggle" type="button" aria-label="Switch language">FR</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ HERO + WHEEL ============ -->
+    <section class="hero" id="wheel" aria-labelledby="heroTitle">
+      <div class="hero-deco" aria-hidden="true">
+        <span class="deco deco-ticket">ADMIT<br>TWO ♡</span>
+        <span class="deco deco-popcorn">
+          <svg viewBox="0 0 64 64" width="64" height="64"><g><circle cx="20" cy="18" r="8" fill="#FFF8F3"/><circle cx="32" cy="13" r="9" fill="#FFF8F3"/><circle cx="44" cy="18" r="8" fill="#FFF8F3"/><circle cx="26" cy="22" r="7" fill="#FFFDF8"/><circle cx="38" cy="22" r="7" fill="#FFFDF8"/></g><path d="M14 24h36l-5 34H19z" fill="#FFFFFF" stroke="#C74368" stroke-width="2"/><path d="M22 24l2 34M32 24v34M42 24l-2 34" stroke="#C74368" stroke-width="5"/></svg>
+        </span>
+        <span class="deco deco-projector">
+          <svg viewBox="0 0 64 64" width="58" height="58"><circle cx="20" cy="16" r="10" fill="none" stroke="#69263F" stroke-width="3"/><circle cx="40" cy="16" r="10" fill="none" stroke="#69263F" stroke-width="3"/><circle cx="20" cy="16" r="2.5" fill="#69263F"/><circle cx="40" cy="16" r="2.5" fill="#69263F"/><rect x="10" y="28" width="36" height="22" rx="5" fill="#69263F"/><path d="M46 34l12-5v20l-12-5z" fill="#C74368"/><rect x="18" y="50" width="4" height="8" fill="#69263F"/><rect x="34" y="50" width="4" height="8" fill="#69263F"/></svg>
+        </span>
+        <svg class="deco deco-spark s1"><use href="#i-sparkle"/></svg>
+        <svg class="deco deco-spark s2"><use href="#i-sparkle"/></svg>
+        <svg class="deco deco-spark s3"><use href="#i-star"/></svg>
+        <svg class="deco deco-spark s4"><use href="#i-heart"/></svg>
+      </div>
+
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="ribbon" data-i18n="eyebrow">our tiny cinema club</span></p>
+        <h1 id="heroTitle" data-i18n-html="heroTitle">One wheel. Two hearts.<br><em>One movie.</em></h1>
+        <p class="lede" data-i18n="heroSubtitle">Let fate pick tonight's movie date.</p>
+        <div class="hero-stats">
+          <span class="pill"><svg width="14" height="14"><use href="#i-film"/></svg> <strong id="statWishlist">0</strong> <span data-i18n="statWishlist">films on the wishlist</span></span>
+          <span class="pill"><svg width="14" height="14"><use href="#i-wheel"/></svg> <strong id="statWheel">0</strong> <span data-i18n="statWheel">on the wheel</span></span>
+          <span class="pill"><svg width="14" height="14"><use href="#i-heart"/></svg> <strong id="statWatched">0</strong> <span data-i18n="statWatched">watched together</span></span>
+        </div>
+      </div>
+
+      <div class="wheel-zone">
+        <div class="wheel-frame" id="wheelFrame">
+          <div class="wheel-bulbs" aria-hidden="true"></div>
+          <div class="pointer" aria-hidden="true">
+            <svg viewBox="0 0 40 52" width="40" height="52"><path d="M20 50L4 18A16 16 0 1 1 36 18z" fill="#C74368" stroke="#FFFFFF" stroke-width="3"/><path d="M20 23s-6-3.6-6-7.2a3.2 3.2 0 0 1 6-1.6 3.2 3.2 0 0 1 6 1.6c0 3.6-6 7.2-6 7.2z" fill="#FFFFFF"/></svg>
+          </div>
+          <canvas id="wheelCanvas" width="600" height="600" role="img" aria-label="Movie wheel"></canvas>
+          <button class="wheel-hub" id="hubSpin" type="button" aria-label="Spin the wheel">
+            <svg width="26" height="26"><use href="#i-heart"/></svg>
+          </button>
+        </div>
+
+        <p class="live-ticker" id="ticker" aria-hidden="true">&nbsp;</p>
+        <p class="sr-only" id="spinStatus" role="status" aria-live="polite"></p>
+
+        <div class="wheel-actions">
+          <button class="btn btn-primary btn-xl" id="spinBtn" type="button">
+            <span data-i18n="spin">Spin the wheel</span> <span aria-hidden="true">💗</span>
+          </button>
+        </div>
+
+        <div class="wheel-options">
+          <label class="toggle">
+            <input type="checkbox" id="optSurprise" />
+            <span class="toggle-track" aria-hidden="true"></span>
+            <span data-i18n="optSurprise">Surprise Me <small>(hide the titles)</small></span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="optExcludeWatched" />
+            <span class="toggle-track" aria-hidden="true"></span>
+            <span data-i18n="optExcludeWatched">Skip movies we've watched</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="optFavoritesOnly" />
+            <span class="toggle-track" aria-hidden="true"></span>
+            <span data-i18n="optFavoritesOnly">Favorites only</span>
+          </label>
+        </div>
+        <p class="wheel-empty" id="wheelEmpty" hidden></p>
+      </div>
+    </section>
+
+    <!-- ============ LITTLE EXTRAS: movie of the day + love note ============ -->
+    <section class="extras" aria-label="Little extras">
+      <article class="motd card" id="motd">
+        <p class="card-kicker"><svg width="14" height="14"><use href="#i-sparkle"/></svg> <span data-i18n="motdTitle">Movie of the day</span></p>
+        <div class="motd-body" id="motdBody"></div>
+      </article>
+      <article class="love-note" id="loveNote">
+        <span class="tape" aria-hidden="true"></span>
+        <p class="love-note-text" id="loveNoteText" aria-live="polite"></p>
+        <button class="link-btn" id="loveNoteNext" type="button" data-i18n="loveNoteNext">another little note ♡</button>
+      </article>
+    </section>
+
+    <!-- ============ WATCHLIST ============ -->
+    <section class="section" id="watchlist" aria-labelledby="watchlistTitle">
+      <div class="section-head">
+        <p class="eyebrow" data-i18n="watchlistEyebrow">every film she's been dreaming of</p>
+        <h2 id="watchlistTitle" data-i18n="watchlistTitle">Our Watchlist</h2>
+        <p class="section-count" id="watchlistCount"></p>
+        <a class="btn btn-ghost btn-sm lb-link" id="herWatchlistLink" href="#" target="_blank" rel="noopener" data-i18n="openHerWatchlist">Open Aylie's watchlist on Letterboxd ↗</a>
+      </div>
+
+      <div class="filters" role="search">
+        <label class="field field-search">
+          <span class="sr-only" data-i18n="searchLabel">Search films</span>
+          <input type="search" id="searchInput" placeholder="Search a film…" data-i18n-placeholder="searchPlaceholder" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span class="field-label" data-i18n="filterYear">Decade</span>
+          <select id="filterDecade"></select>
+        </label>
+        <label class="field">
+          <span class="field-label" data-i18n="filterGenre">Genre</span>
+          <select id="filterGenre"></select>
+        </label>
+        <label class="field">
+          <span class="field-label" data-i18n="filterShow">Show</span>
+          <select id="filterShow">
+            <option value="all" data-i18n="showAll">All films</option>
+            <option value="wheel" data-i18n="showWheel">On the wheel</option>
+            <option value="off" data-i18n="showOff">Off the wheel</option>
+            <option value="fav" data-i18n="showFav">Our favorites</option>
+          </select>
+        </label>
+      </div>
+
+      <ul class="movie-grid" id="movieGrid" aria-live="polite"></ul>
+      <p class="empty-state" id="gridEmpty" hidden></p>
+
+    </section>
+
+    <!-- ============ HISTORY ============ -->
+    <section class="section journal" id="history" aria-labelledby="historyTitle">
+      <div class="section-head">
+        <p class="eyebrow" data-i18n="historyEyebrow">our little movie diary</p>
+        <h2 id="historyTitle" data-i18n="historyTitle">Movie Night History</h2>
+        <p class="section-count" id="historyCount"></p>
+      </div>
+      <ol class="history-list" id="historyList"></ol>
+      <p class="empty-state" id="historyEmpty" hidden data-i18n="historyEmpty">No movie nights yet. Spin the wheel and press “Let's go!” to start our diary ♡</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="filmstrip" aria-hidden="true"></div>
+    <figure class="us">
+      <div class="polaroid">
+        <span class="tape" aria-hidden="true"></span>
+        <div class="polaroid-photo">
+          <!-- Put your photo next to index.html, named us.jpg -->
+          <img id="usPhoto" src="us.jpg" alt="Aylie and Roro" data-i18n-alt="photoAlt" />
+          <div class="polaroid-empty" aria-hidden="true">
+            <svg width="54" height="54"><use href="#i-heart"/></svg>
+          </div>
+        </div>
+        <figcaption class="polaroid-caption" data-i18n="photoCaption">Aylie &amp; Roro ♡</figcaption>
+      </div>
+      <svg class="us-spark a" aria-hidden="true"><use href="#i-sparkle"/></svg>
+      <svg class="us-spark b" aria-hidden="true"><use href="#i-heart"/></svg>
+      <svg class="us-spark c" aria-hidden="true"><use href="#i-star"/></svg>
+    </figure>
+    <p class="footer-love" data-i18n="footer">Made with love by Roro, for Aylie. ♡</p>
+    <p class="signature" data-i18n="signature">— Roro</p>
+    <p class="footer-credits small">
+      <span data-i18n="tmdbCredit">Posters &amp; film details from TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</span>
+      <span data-i18n="lbCredit">Watchlist from Letterboxd. Not affiliated with Letterboxd.</span>
+    </p>
+  </footer>
+
+  <!-- ============ RESULT DIALOG ============ -->
+  <dialog class="result" id="resultDialog" aria-labelledby="resultTitle">
+    <button class="icon-btn result-close" id="resultClose" type="button" aria-label="Close">
+      <svg width="20" height="20"><use href="#i-close"/></svg>
+    </button>
+    <div class="result-inner">
+      <div class="result-poster" id="resultPoster"></div>
+      <div class="result-info">
+        <p class="result-message" id="resultMessage"></p>
+        <h2 class="result-title" id="resultTitle"></h2>
+        <ul class="result-meta" id="resultMeta"></ul>
+        <p class="result-genres" id="resultGenres"></p>
+        <div class="result-actions">
+          <button class="btn btn-primary" id="resultConfirm" type="button" data-i18n="resultConfirm">Let's go! 🍿</button>
+          <button class="btn btn-ghost" id="resultRetry" type="button" data-i18n="resultRetry">Spin again?</button>
+          <a class="btn btn-link" id="resultLink" href="#" target="_blank" rel="noopener">
+            <span data-i18n="resultDiscover">Discover the film</span>
+            <svg width="16" height="16" aria-hidden="true"><use href="#i-ext"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+  <script src="watchlist.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
